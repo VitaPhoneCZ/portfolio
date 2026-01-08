@@ -89,17 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     formStatus.style.display = 'block';
 
                     if (data.status === 'success') {
-                        formStatus.style.color = '#00f2fe'; // Success color
+                        formStatus.style.color = '#22c55e'; // Success color (Green)
                         contactForm.reset();
                     } else {
-                        formStatus.style.color = '#ff0055'; // Error color
+                        formStatus.style.color = '#ef4444'; // Error color (Red)
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     formStatus.innerText = 'Došlo k chybě při komunikaci se serverem.';
                     formStatus.style.display = 'block';
-                    formStatus.style.color = '#ff0055';
+                    formStatus.style.color = '#ef4444';
                 })
                 .finally(() => {
                     submitBtn.innerText = originalBtnText;

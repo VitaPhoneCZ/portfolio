@@ -1,9 +1,7 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-// Configuration
-$to_email = "vitek.f18@gmail.com";
-$subject_prefix = "[Portfolio Kontakt] ";
+ini_set('display_errors', 0); // Hide potential warnings from response
 
 // Check Method
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
@@ -33,25 +31,13 @@ if (!filter_var($sender_email, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
-// Prepare Email
-$subject = $subject_prefix . "Zpráva od " . $hero_name;
-$body = "Jméno: $hero_name\n";
-$body .= "Email: $sender_email\n\n";
-$body .= "Zpráva:\n$message_content\n";
+// Save to file
+$log_entry = date('Y-m-d H:i:s') . " | Jméno: $hero_name | Email: $sender_email | Zpráva: $message_content" . PHP_EOL;
+$log_file = 'formular.txt';
 
-$headers = "From: no-reply@portfolio.local\r\n"; // Or use sender_email if server allows spoofing
-$headers .= "Reply-To: $sender_email\r\n";
-$headers .= "X-Mailer: PHP/" . phpversion();
-
-// Send
-if (mail($to_email, $subject, $body, $headers)) {
-    echo json_encode(["status" => "success", "message" => "Zpráva byla úspěšně odeslána!"]);
+if (file_put_contents($log_file, $log_entry, FILE_APPEND)) {
+    echo json_encode(["status" => "success", "message" => "Zpráva byla uložena!"]);
 } else {
-    // In local XAMPP without SMTP configured, mail() returns false.
-    // For testing purposes, we might want to simulate success or log it.
-    // Uncomment next line to simulate success on local if mail() fails (for UI testing)
-    // echo json_encode(["status" => "success", "message" => "Odesláno (Simulace pro localhost)."]); exit;
-
-    echo json_encode(["status" => "error", "message" => "Chyba při odesílání emailu. (Zkontrolujte SMTP nastavení serveru)"]);
+    echo json_encode(["status" => "error", "message" => "Chyba při ukládání zprávy."]);
 }
 ?>
